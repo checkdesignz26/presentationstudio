@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Presentation Studio</title>
+<style>
+  :root{
+    --bg:#07101f; --panel:#171d31; --panel2:#202844; --ink:#fff; --muted:#c8cada;
+    --line:rgba(255,255,255,.15); --pink:#ff72cf; --purple:#9a67ff;
+  }
+  *{box-sizing:border-box} html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--ink);overflow:hidden}
+  button{font:inherit;font-weight:800;color:white;border:1px solid rgba(255,255,255,.16);background:linear-gradient(#303953,#232a42);border-radius:20px;padding:12px 18px;box-shadow:inset 0 1px rgba(255,255,255,.12);touch-action:manipulation}
+  button.primary{background:linear-gradient(90deg,var(--purple),var(--pink));border:0}.app{height:100%;display:grid;grid-template-rows:auto 1fr}.topbar{display:flex;gap:12px;align-items:center;padding:14px 22px;background:#060c19;border-bottom:1px solid var(--line);flex-wrap:wrap}.brand{font-size:24px;font-weight:900;margin-right:auto;white-space:nowrap}.logo{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#b98cff,#ff7fd7);box-shadow:0 0 0 4px rgba(255,255,255,.05)}
+  .main{display:grid;grid-template-columns:250px 1fr 320px;min-height:0}.side{background:rgba(20,26,45,.9);border-right:1px solid var(--line);padding:18px;overflow:auto}.right{border-left:1px solid var(--line);border-right:0}.workspace{position:relative;overflow:auto;background:radial-gradient(circle at top,#1d1b42,#07101f 50%);padding:70px 20px 120px}.workspace::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;opacity:.45}.page-wrap{position:relative;width:max-content;margin:0 auto 70px}.page-title{text-align:center;width:max-content;margin:0 auto 16px;background:rgba(7,12,25,.7);border:1px solid var(--line);border-radius:28px;padding:10px 22px;font-weight:900;font-size:22px}.page{position:relative;background:white;box-shadow:0 14px 45px rgba(0,0,0,.45);overflow:hidden;touch-action:none}.page.selected{outline:4px solid rgba(255,255,255,.22)}.page.square{width:620px;height:620px}.page.horizontal{width:820px;height:461px}.page.custom{width:620px;height:620px}.asset{position:absolute;left:0;top:0;transform-origin:center center;touch-action:none;user-select:none}.asset img{display:block;width:100%;height:100%;pointer-events:none}.asset.selected{outline:2px solid rgba(160,104,255,.75)}.handle{position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid #9a67ff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:none;z-index:5}.asset.selected .handle{display:block}.handle.br{right:-10px;bottom:-10px}.handle.tr{right:-10px;top:-10px}.handle.bl{left:-10px;bottom:-10px}.handle.tl{left:-10px;top:-10px}.panel{background:rgba(28,35,59,.85);border:1px solid var(--line);border-radius:26px;padding:16px;margin-bottom:20px}.panel h2{font-size:22px;margin:4px 0 14px}.stack{display:grid;gap:12px}.mini{font-size:15px;color:var(--muted);line-height:1.35}.tray-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.tray-item{position:relative;aspect-ratio:1;background:#111827;border:1px solid rgba(255,255,255,.16);border-radius:12px;overflow:hidden;display:grid;place-items:center}.tray-item.selected{outline:3px solid #ff72cf}.tray-item img{max-width:100%;max-height:100%;display:block}.tray-delete{position:absolute;top:5px;right:5px;width:28px;height:28px;padding:0;border-radius:50%;background:rgba(0,0,0,.72);border:1px solid rgba(255,255,255,.28);font-size:20px;line-height:23px;z-index:10}.tray-delete:active{transform:scale(.95)}input[type=file]{display:none}.page-list button{width:100%;text-align:left;border-radius:18px}.page-list button.active{outline:3px solid rgba(255,255,255,.35)}.hint{font-size:14px;color:#c6c7d7;margin-top:10px}.hidden{display:none!important}@media(max-width:1000px){.main{grid-template-columns:210px 1fr 280px}.page.square{width:560px;height:560px}.page.horizontal{width:720px;height:405px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="logo"></div><div class="brand">Presentation Studio</div>
+    <button id="singlePatternBtn">single pattern</button><button id="squareCardsBtn">+ square cards</button><button id="applyCardsBtn">apply cards</button><button id="addBannerBtn">+ banner</button><button id="addTextBtn">+ text</button><button id="addOverlayBtn">+ overlay layer</button><button id="saveBtn">save .pstudio</button><button id="openBtn">open .pstudio</button><button id="undoBtn">↶ undo</button><button id="deselectBtn">deselect</button>
+  </div>
+  <div class="main">
+    <aside class="side">
+      <div class="panel"><h2>Pages</h2><div class="stack"><button class="primary" id="addHorizontalPage">+ horizontal listing page</button><button class="primary" id="addSquarePage">+ square page</button><button class="primary" id="addCustomPage">+ custom / social page</button><button id="addImagePage">+ image page from upload</button></div></div>
+      <div class="panel"><div id="pageList" class="stack page-list"></div><div class="hint">Main workspace scrolls page-to-page like Canva.</div></div>
+    </aside>
+    <main id="workspace" class="workspace"><div id="pages"></div></main>
+    <aside class="side right">
+      <div class="panel"><h2>Image tray</h2><div class="stack"><button id="uploadImagesBtn">upload images to tray</button><button class="primary" id="fillSelectedBtn">fill selected card</button><div class="mini">Select a tray image, then tap a card/strip or use fill selected card.</div><button id="imagePageUsesSizeBtn">+ image page uses image size</button></div><div id="imageTray" class="tray-grid" style="margin-top:14px"></div></div>
+      <div class="panel"><h2>Banner tray</h2><div class="stack"><button id="uploadBannersBtn">upload banners</button><button class="primary" id="addSelectedBannerBtn">add selected banner</button></div><div id="bannerTray" class="tray-grid" style="margin-top:14px"></div></div>
+      <div class="panel"><h2>Overlay tray</h2><div class="stack"><button id="uploadOverlaysBtn">upload overlays</button><button class="primary" id="addSelectedOverlayBtn">add selected overlay</button><button id="fitOverlayBtn">fit selected overlay</button><button id="actualOverlayBtn">actual size</button></div><div id="overlayTray" class="tray-grid" style="margin-top:14px"></div></div>
+    </aside>
+  </div>
+</div>
+<input id="imageInput" type="file" accept="image/*" multiple><input id="bannerInput" type="file" accept="image/*" multiple><input id="overlayInput" type="file" accept="image/*" multiple><input id="openInput" type="file" accept=".pstudio,application/json">
+<script>
+const workspace=document.getElementById('workspace'), pagesEl=document.getElementById('pages'), pageList=document.getElementById('pageList');
+let pages=[], activePageId=null, selectedAssetId=null, selectedTray={type:null,id:null}, history=[];
+const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
+const trays={image:[],banner:[],overlay:[]};
+function saveHistory(){history.push(JSON.stringify({pages,trays})); if(history.length>40)history.shift()}
+function activePage(){return pages.find(p=>p.id===activePageId)||pages[0]}
+function setActivePage(id, scroll=false){activePageId=id; render(false); if(scroll){document.querySelector(`[data-page-wrap="${id}"]`)?.scrollIntoView({block:'center'})}}
+function addPage(type='square'){saveHistory(); const id=uid(); pages.push({id,type,assets:[],title:`${pages.length+1}. ${type==='horizontal'?'Etsy listing page':type==='square'?'3000 × 3000 square page':'custom page'}`}); activePageId=id; render(true)}
+function addAssetToPage(page, src, kind='overlay', naturalW=800, naturalH=800){
+  const maxW=page.type==='horizontal'?820:620, maxH=page.type==='horizontal'?461:620;
+  let w=naturalW, h=naturalH;
+  const target = kind==='banner' ? maxW*.86 : Math.min(maxW*.42, 300);
+  if(kind==='banner'){ const r=target/w; w*=r; h*=r; }
+  else { const r=Math.min(target/w, (maxH*.42)/h, 1); w*=r; h*=r; if(w<120||h<120){ const rr=Math.min(220/w,220/h); w*=rr; h*=rr; } }
+  const asset={id:uid(),src,kind,x:(maxW-w)/2,y:(maxH-h)/2,w,h,rot:0}; page.assets.push(asset); selectedAssetId=asset.id; return asset;
+}
+function render(keepScroll=true){
+  const oldScroll=workspace.scrollTop; pagesEl.innerHTML=''; pageList.innerHTML='';
+  pages.forEach((p,i)=>{
+    const b=document.createElement('button'); b.textContent=`${i+1}. ${p.title}`; if(p.id===activePageId)b.classList.add('active'); b.onclick=()=>setActivePage(p.id,true); pageList.appendChild(b);
+    const wrap=document.createElement('div'); wrap.className='page-wrap'; wrap.dataset.pageWrap=p.id;
+    const title=document.createElement('div'); title.className='page-title'; title.textContent=`${i+1}. ${p.title}`; wrap.appendChild(title);
+    const page=document.createElement('div'); page.className=`page ${p.type} ${p.id===activePageId?'selected':''}`; page.dataset.page=p.id; page.onclick=e=>{ if(e.target===page){activePageId=p.id; selectedAssetId=null; render(false)} };
+    p.assets.forEach(a=>page.appendChild(assetNode(p,a)));
+    wrap.appendChild(page); pagesEl.appendChild(wrap);
+  });
+  renderTray('image'); renderTray('banner'); renderTray('overlay');
+  if(keepScroll) workspace.scrollTop=oldScroll;
+}
+function assetNode(page,a){
+  const el=document.createElement('div'); el.className='asset'+(a.id===selectedAssetId?' selected':''); el.dataset.asset=a.id; el.style.width=a.w+'px'; el.style.height=a.h+'px'; el.style.transform=`translate(${a.x}px,${a.y}px) rotate(${a.rot||0}deg)`;
+  const img=document.createElement('img'); img.src=a.src; el.appendChild(img);
+  ['tl','tr','bl','br'].forEach(pos=>{const h=document.createElement('div');h.className='handle '+pos;h.dataset.handle=pos;el.appendChild(h)});
+  el.addEventListener('pointerdown',e=>startAssetPointer(e,page,a)); return el;
+}
+function startAssetPointer(e,page,a){
+  e.preventDefault(); e.stopPropagation();
+  const savedScroll=workspace.scrollTop; activePageId=page.id; selectedAssetId=a.id;
+  const handle=e.target.dataset.handle; const sx=e.clientX, sy=e.clientY, ox=a.x, oy=a.y, ow=a.w, oh=a.h;
+  render(false); workspace.scrollTop=savedScroll;
+  const move=ev=>{ const dx=ev.clientX-sx, dy=ev.clientY-sy; if(handle){ const delta=Math.max(dx,dy); const ratio=Math.max(.08,(ow+delta)/ow); a.w=Math.max(30,ow*ratio); a.h=Math.max(30,oh*ratio); } else { a.x=ox+dx; a.y=oy+dy; } render(false); workspace.scrollTop=savedScroll; };
+  const up=()=>{window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',up);};
+  window.addEventListener('pointermove',move,{passive:false}); window.addEventListener('pointerup',up,{once:true});
+}
+async function filesToTray(files,type){saveHistory(); for(const file of files){ const src=await readFile(file); const dims=await imgDims(src); trays[type].push({id:uid(),name:file.name,src,w:dims.w,h:dims.h}); } render()}
+function readFile(file){return new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(file)})}
+function imgDims(src){return new Promise(res=>{const i=new Image();i.onload=()=>res({w:i.naturalWidth,h:i.naturalHeight});i.src=src})}
+function renderTray(type){ const box=document.getElementById(type+'Tray'); if(!box)return; box.innerHTML=''; trays[type].forEach(item=>{ const div=document.createElement('div'); div.className='tray-item'+(selectedTray.type===type&&selectedTray.id===item.id?' selected':''); const img=document.createElement('img'); img.src=item.src; div.appendChild(img); const x=document.createElement('button'); x.className='tray-delete'; x.textContent='×'; x.title='delete'; x.onclick=e=>{e.stopPropagation(); saveHistory(); const idx=trays[type].findIndex(t=>t.id===item.id); if(idx>-1)trays[type].splice(idx,1); if(selectedTray.id===item.id)selectedTray={type:null,id:null}; render();}; div.onclick=()=>{selectedTray={type,id:item.id}; render()}; box.appendChild(div); }); }
+function selectedTrayItem(type){return trays[type].find(t=>t.id===selectedTray.id)}
+function addSelected(type){ const item=selectedTrayItem(type); const p=activePage(); if(!item||!p)return; saveHistory(); addAssetToPage(p,item.src,type,item.w,item.h); render(false)}
+function fitSelected(scale=.86){ const p=activePage(); const a=p?.assets.find(x=>x.id===selectedAssetId); if(!p||!a)return; const pw=p.type==='horizontal'?820:620, ph=p.type==='horizontal'?461:620; const r=Math.min((pw*scale)/a.w,(ph*scale)/a.h); a.w*=r; a.h*=r; a.x=(pw-a.w)/2; a.y=(ph-a.h)/2; render(false)}
+function saveStudio(){ const blob=new Blob([JSON.stringify({version:2,pages,trays},null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='presentation-studio.pstudio'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000)}
+async function openStudio(file){ const txt=await file.text(); const data=JSON.parse(txt); pages=data.pages||[]; Object.assign(trays,data.trays||{}); activePageId=pages[0]?.id||null; selectedAssetId=null; render(true)}
+document.getElementById('addSquarePage').onclick=()=>addPage('square'); document.getElementById('addHorizontalPage').onclick=()=>addPage('horizontal'); document.getElementById('addCustomPage').onclick=()=>addPage('custom');
+document.getElementById('uploadImagesBtn').onclick=()=>imageInput.click(); document.getElementById('uploadBannersBtn').onclick=()=>bannerInput.click(); document.getElementById('uploadOverlaysBtn').onclick=()=>overlayInput.click();
+imageInput.onchange=e=>filesToTray(e.target.files,'image'); bannerInput.onchange=e=>filesToTray(e.target.files,'banner'); overlayInput.onchange=e=>filesToTray(e.target.files,'overlay');
+document.getElementById('addSelectedBannerBtn').onclick=()=>addSelected('banner'); document.getElementById('addSelectedOverlayBtn').onclick=()=>addSelected('overlay'); document.getElementById('addBannerBtn').onclick=()=>addSelected('banner'); document.getElementById('addOverlayBtn').onclick=()=>addSelected('overlay');
+document.getElementById('fitOverlayBtn').onclick=()=>fitSelected(.86); document.getElementById('actualOverlayBtn').onclick=()=>fitSelected(1); document.getElementById('deselectBtn').onclick=()=>{selectedAssetId=null;render(false)};
+document.getElementById('undoBtn').onclick=()=>{const last=history.pop(); if(last){const d=JSON.parse(last); pages=d.pages; Object.assign(trays,d.trays||{}); activePageId=pages[0]?.id; render(true)}};
+document.getElementById('saveBtn').onclick=saveStudio; document.getElementById('openBtn').onclick=()=>openInput.click(); openInput.onchange=e=>openStudio(e.target.files[0]);
+document.getElementById('addImagePage').onclick=()=>{const item=selectedTrayItem('image'); if(!item)return; addPage('square'); const p=activePage(); addAssetToPage(p,item.src,'image',item.w,item.h); fitSelected(1)};
+document.getElementById('imagePageUsesSizeBtn').onclick=()=>document.getElementById('addImagePage').click();
+document.getElementById('fillSelectedBtn').onclick=()=>addSelected('image');
+addPage('horizontal'); addPage('square');
+</script>
+</body>
+</html>
